@@ -1,0 +1,8 @@
+Nmap scan report for 203.0.113.15
+Host is up (0.030s latency).
+Not shown: 997 filtered ports
+PORT    STATE SERVICE
+22/tcp  open  ssh
+80/tcp  open  http
+443/tcp open  https
+Service versions are not reliably detected.

@@ -1,0 +1,2 @@
+Failed SSH login from 10.0.0.5 for user root on port 22
+Multiple failed login attempts observed over a short period

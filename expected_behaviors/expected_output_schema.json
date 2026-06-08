@@ -1,0 +1,12 @@
+{
+  "summary": "string",
+  "tactic": "string|null",
+  "technique_id": "string|null",
+  "evidence": ["string"],
+  "confidence": "high|medium|low",
+  "why_not": "string|null",
+  "detection_idea": "string|null",
+  "network_investigation": "string|null",
+  "remediation": "string|null",
+  "analyst_questions": ["string"]
+}
