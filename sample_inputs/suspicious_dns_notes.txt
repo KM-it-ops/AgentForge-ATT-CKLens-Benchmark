@@ -1,0 +1,2 @@
+Repeated DNS requests to suspicious-domain.com every minute from 192.168.1.42
+Traffic persists even when user applications are closed
