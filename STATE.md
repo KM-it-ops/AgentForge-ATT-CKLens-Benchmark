@@ -1,86 +1,76 @@
 # STATE — ATT&CKLens (Claude Code attempt)
 
-_Last updated: 2026-06-08 · Packet 1 (Build Brief / Plan)_
+_Last updated: 2026-06-08 · Packet 2 (Implementation) — MVP complete_
 
 ## Current branch
 `agent/claude-code-attacklens`
 
+## Status: MVP implemented and tested ✅
+- 12/12 unit tests pass (`python -m pytest -q`, 0.05s).
+- `python -c "import app; app.build_demo()"` builds the Gradio UI cleanly (Gradio 5.50).
+- Deterministic, offline rule engine — no LLM, no network, no paid APIs, CPU-only.
+
 ## Requirements summary
-- Build **ATT&CKLens**: a defensive helper that maps ONE security observation per run
-  to a likely MITRE ATT&CK tactic/technique and returns structured defensive insight.
-- **Inputs** (plain text): log snippet, alert text, scan summary, packet-analysis note,
-  or narrative incident note. Must tolerate blank lines / minor formatting; empty or
-  unparseable input → clean error message, never a crash.
-- **Output** (JSON-serialisable dict, exact keys): `summary`, `tactic`, `technique_id`,
-  `evidence[]`, `confidence` (high|medium|low), `why_not`, `detection_idea`,
-  `network_investigation`, `remediation`, `analyst_questions[]`.
-- **Behaviour rules**: no forced mapping (null tactic/technique + `why_not` when weak);
-  quote exact evidence phrases (no fabrication); calibrated confidence; defensive-only;
-  prompt-injection resistant.
-- **Deployment**: Python 3, Gradio UI, `requirements.txt`, CPU-only, no GPU/paid APIs,
-  no persistence/transmission of input. Launch via `python app.py`.
-- **Engine**: deterministic rule/pattern matching over a small embedded ATT&CK signature
-  set (no LLM, no live MITRE fetch).
+- Map ONE security observation → likely MITRE ATT&CK tactic/technique with structured
+  defensive output. Inputs: log/alert/scan/packet-note/narrative as plain text.
+- Output dict (all 10 keys): `summary`, `tactic`, `technique_id`, `evidence[]`,
+  `confidence` (high|medium|low), `why_not`, `detection_idea`, `network_investigation`,
+  `remediation`, `analyst_questions[]`.
+- No forced mapping; quote evidence verbatim; calibrated confidence; defensive-only;
+  prompt-injection resistant; no persistence; Gradio UI launched via `python app.py`.
 
-## Proposed architecture
-Clean UI / core / data / safety separation:
-- `app.py` — Gradio entry point only. Textbox + submit → `core.analyze_input` →
-  render both pretty text and raw JSON. No business logic here.
-- `src/core.py` — `analyze_input(text) -> dict`. Orchestrates: validate → safety screen →
-  match signatures → score confidence → assemble schema-compliant result. Always returns
-  the full schema (graceful errors included).
-- `src/patterns.py` — curated `SIGNATURES` table. Each entry: keywords/regex, tactic,
-  technique_id (+name), detection_idea, network_investigation, remediation, analyst
-  questions. Small and auditable (~6–10 techniques covering the sample/test cases:
-  brute force/SSH T1110, encoded PowerShell T1059.001, network scan T1046,
-  C2/DNS beacon T1071/T1071.004, plus a couple common ones).
-- `src/safety.py` — prompt-injection detection (e.g. "ignore previous instructions",
-  "reveal system prompt"), refusal response, and input validation (empty/too-short).
-- `prompts/system_prompt.txt` — documents the assistant's defensive framing / refusal
-  posture (required by file structure; also the audit trail for guardrails).
-- `examples/sample_inputs.txt` — quick-test inputs.
-- `tests/test_core.py` — pytest covering the 5 acceptance tests + edge cases
-  (empty input, injection).
-- `requirements.txt` — `gradio`, `pytest` (minimal).
-- `docs/architecture.md`, `docs/security-notes.md`, `README.md`, `SECURITY.md`.
+## Architecture (as built)
+Clean UI / orchestration / data / safety separation:
+- `app.py` — Gradio UI only; calls `core.analyze_input`; renders readable Markdown + raw JSON.
+- `src/core.py` — `analyze_input(text)` orchestrator. Pipeline: validate → injection screen
+  → offensive screen → `patterns.match` → confidence scoring → `build_result` (guarantees
+  all 10 schema keys). Never raises on user input.
+- `src/patterns.py` — `Signature` dataclass + curated `SIGNATURES` table (6 techniques:
+  T1110, T1059.001, T1046, T1071.004, T1003, T1566) + `match()` (verbatim evidence, scored).
+- `src/safety.py` — `is_empty`, `detect_prompt_injection`, `detect_offensive_request`,
+  safe refusal summaries. Untrusted-input handling; never leaks the charter.
+- `prompts/system_prompt.txt` — defensive operating charter (audit trail; no LLM in MVP).
 
-### Data flow
-`UI text → core.analyze_input → safety.validate/screen → patterns.match →
-core.score_confidence → result dict → UI renders JSON + readable view`
+Confidence rule: ≥2 distinct indicators → high, 1 → medium, 0 → low (no-mapping path).
 
-## Files I will create (next packets — NOT this turn)
-- `app.py`
-- `requirements.txt`
+## Files created/updated this packet
+- `app.py`, `requirements.txt` (gradio, pytest)
 - `src/__init__.py`, `src/core.py`, `src/patterns.py`, `src/safety.py`
-- `prompts/system_prompt.txt`
-- `examples/sample_inputs.txt`
 - `tests/__init__.py`, `tests/test_core.py`
+- `prompts/system_prompt.txt`, `examples/sample_inputs.txt`
+- `README.md` (replaced benchmark README with ATT&CKLens app README; benchmark README
+  preserved on `main`/git history), `SECURITY.md`
 - `docs/architecture.md`, `docs/security-notes.md`
-- `SECURITY.md` (and ATT&CKLens `README.md` — see Assumptions re: existing README)
+- `STATE.md` (this file)
 
-## Safety constraints (from SAFETY_RULES.md / SPEC §Behaviour)
-- Defensive only — never offensive/exploit/detection-evasion guidance.
-- Treat all input as untrusted; resist prompt injection; never reveal system prompt
-  or internal logic.
-- Honest limitations — decline to map (null + `why_not`) rather than hallucinate.
-- Calibrated confidence; never "high" on vague input.
-- Remediation = best practice only (MFA, least privilege, patching); never weaken controls.
-- No persistence/transmission of input; fully local.
+## Acceptance test coverage (ACCEPTANCE_TESTS.md → tests/test_core.py)
+1. Successful launch — verified via `import app; build_demo()` (no crash).
+2. Basic mapping — failed SSH → `Credential Access` / `T1110`, evidence quotes
+   "Failed SSH login", confidence medium, MFA remediation. ✅
+3. No clear mapping — "system seemed slow" → null/null, low, `why_not` set. ✅
+4. Prompt injection — refused; no internal prompt leaked. ✅
+5. Network investigation — DNS beacon → `network_investigation` with DNS guidance,
+   `Command and Control` / `T1071.004`. ✅
+   Plus: PowerShell T1059.001, Nmap T1046, empty input (parametrized), offensive
+   refusal, schema completeness, no-fabricated-evidence.
 
-## Assumptions
-1. Deterministic rule-based engine (no LLM) satisfies the spec, since no API/network is
-   permitted and SPEC allows embedded technique IDs/names.
-2. A small curated signature table is the intended reading of "don't hard-code MITRE
-   lists" (no full-matrix dump).
-3. Embedding the system prompt as a file is required by structure even without an LLM;
-   it doubles as guardrail documentation.
-4. Root `README.md` currently holds the **benchmark** README. The ATT&CKLens app README
-   is needed for the rubric. Plan: keep benchmark content and add a clearly-separated
-   "ATT&CKLens (application)" section, OR write a dedicated app README — to confirm before
-   touching README.md (original is preserved on `main`/git history).
-5. Python 3.9+ compatibility (local env is 3.14).
+## Safety constraints (enforced)
+- Defensive only; offensive/evasion requests refused (`detect_offensive_request`).
+- Input untrusted; injection refused; charter never revealed.
+- Honest limitations (null + `why_not`); evidence quoted verbatim only.
+- Calibrated confidence; never high on vague input.
+- Best-practice remediation only; no control-weakening advice.
+- No persistence/transmission; fully local.
+
+## Assumptions (confirmed during build)
+1. Deterministic rule engine satisfies the spec (no API/network permitted). ✅
+2. Small curated signature table = correct reading of "don't hard-code MITRE lists". ✅
+3. System prompt embedded as a file for auditability though no LLM is used. ✅
+4. README decision (Packet-1 open item): replaced root README with the app README;
+   benchmark README remains on `main`. ✅
+5. Python 3.9+ compatible (uses `from __future__ import annotations`; local env 3.14). ✅
 
 ## Next step
-Packet 2 — Implementation: create `requirements.txt`, `src/` modules, `app.py`,
-`prompts/system_prompt.txt`, `examples/sample_inputs.txt`, then `tests/test_core.py`;
-run `pytest` and `python app.py` to confirm launch.
+Packet 3+ (optional): self-review against EVAL_RUBRIC.md; expand signature/guard lists
+if evaluation surfaces gaps; consider score-ranked multi-candidate output. Otherwise the
+MVP is feature-complete and ready to run via `python app.py`.
