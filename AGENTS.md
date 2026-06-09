@@ -64,4 +64,9 @@ Feel free to adjust file names as needed, but maintain a similar level of organi
 * Do not over‑engineer (no databases, no microservices, no authentication unless requested).
 * Do not exceed the recommended number of prompts.
 
+## Project Constraints & Learnings
+
+* On this Windows workspace, pip can hang with `WARNING: Cache entry deserialization failed, entry ignored` during venv setup. Run dependency commands for this project with `PIP_NO_CACHE_DIR=1` and `PIP_DISABLE_PIP_VERSION_CHECK=1`, for example `$env:PIP_NO_CACHE_DIR='1'; $env:PIP_DISABLE_PIP_VERSION_CHECK='1'; .\.venv\Scripts\python.exe -m pip install -r requirements.txt`.
+* For Gradio launch verification in this project, prefer an in-process HTTP probe using `build_app().launch(server_name='127.0.0.1', server_port=7860, prevent_thread_lock=True)` followed by a request to `http://127.0.0.1:7860/`; hidden PowerShell `Start-Process` attempts can stay alive without binding or producing logs.
+
 These instructions apply to all agents (Codex, Claude, Cursor, etc.).  Agent‑specific guidance may exist in separate files (for example, see `CLAUDE.md` for Claude Code–specific recommendations).

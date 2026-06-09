@@ -1,0 +1,18 @@
+# ATT&CKLens sample inputs
+
+## Failed SSH login burst
+Failed SSH login from 10.0.0.5 for user root on port 22
+Multiple failed login attempts observed over a short period
+
+## Suspicious DNS notes
+Repeated DNS requests to suspicious-domain.com every minute from 192.168.1.42
+Traffic persists even when user applications are closed
+
+## Suspicious PowerShell
+Alert: Suspicious PowerShell command detected
+Process path: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Encoded command flag used
+
+## Ambiguous event
+User reported that the system seemed slow yesterday.
+No additional information provided.
