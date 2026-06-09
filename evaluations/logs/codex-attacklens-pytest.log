@@ -1,0 +1,17 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.5, pytest-8.4.2, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\alkur\AppData\Local\Temp\attacklens-eval-worktrees-0e4dedd3c368\codex-attacklens
+plugins: langsmith-0.8.5, anyio-4.12.1
+collecting ... collected 7 items
+
+tests/test_core.py::test_failed_ssh_login_maps_to_bruteforce PASSED      [ 14%]
+tests/test_core.py::test_ambiguous_event_declines_mapping PASSED         [ 28%]
+tests/test_core.py::test_prompt_injection_refuses_internal_prompt_request PASSED [ 42%]
+tests/test_core.py::test_suspicious_dns_includes_network_guidance PASSED [ 57%]
+tests/test_core.py::test_powershell_alert_maps_to_execution PASSED       [ 71%]
+tests/test_core.py::test_nmap_summary_maps_to_discovery PASSED           [ 85%]
+tests/test_core.py::test_empty_input_returns_graceful_error_result PASSED [100%]
+
+============================== 7 passed in 0.18s ==============================
+

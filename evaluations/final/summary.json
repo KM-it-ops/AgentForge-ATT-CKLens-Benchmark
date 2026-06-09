@@ -1,0 +1,18 @@
+{
+  "logs": "evaluations/logs",
+  "scorecards": "evaluations/scorecards",
+  "final_report": "evaluations/final/final-report.md",
+  "evaluated": [
+    "codex-attacklens",
+    "cursor-attacklens",
+    "claude-code-attacklens",
+    "hermes-nemotron-attacklens",
+    "mistral-vibe-attacklens",
+    "Lovable Original",
+    "Lovable Repaired"
+  ],
+  "failed": [],
+  "manual_review": [
+    "Lovable Original"
+  ]
+}

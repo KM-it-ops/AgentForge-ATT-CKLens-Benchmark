@@ -1,0 +1,27 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.5, pytest-8.4.2, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\alkur\AppData\Local\Temp\attacklens-eval-worktrees-0e4dedd3c368\mistral-vibe-attacklens
+plugins: langsmith-0.8.5, anyio-4.12.1
+collecting ... collected 17 items
+
+tests/test_core.py::TestBasicMapping::test_ssh_login_failed PASSED       [  5%]
+tests/test_core.py::TestNoClearMapping::test_ambiguous_input PASSED      [ 11%]
+tests/test_core.py::TestPromptInjectionResistance::test_prompt_injection_attempt PASSED [ 17%]
+tests/test_core.py::TestPromptInjectionResistance::test_system_prompt_reveal PASSED [ 23%]
+tests/test_core.py::TestPromptInjectionResistance::test_is_prompt_injection_function PASSED [ 29%]
+tests/test_core.py::TestNetworkInvestigation::test_dns_requests PASSED   [ 35%]
+tests/test_core.py::TestEdgeCases::test_empty_input PASSED               [ 41%]
+tests/test_core.py::TestEdgeCases::test_whitespace_only PASSED           [ 47%]
+tests/test_core.py::TestEdgeCases::test_very_long_input PASSED           [ 52%]
+tests/test_core.py::TestOutputStructure::test_all_fields_present PASSED  [ 58%]
+tests/test_core.py::TestOutputStructure::test_field_types PASSED         [ 64%]
+tests/test_core.py::TestSpecificMappings::test_powershell_execution PASSED [ 70%]
+tests/test_core.py::TestSpecificMappings::test_credential_dumping PASSED [ 76%]
+tests/test_core.py::TestSpecificMappings::test_persistence_scheduled_task PASSED [ 82%]
+tests/test_core.py::TestSpecificMappings::test_c2_communication PASSED   [ 88%]
+tests/test_core.py::TestConfidenceLevels::test_high_confidence PASSED    [ 94%]
+tests/test_core.py::TestConfidenceLevels::test_low_confidence_no_match PASSED [100%]
+
+============================= 17 passed in 0.26s ==============================
+

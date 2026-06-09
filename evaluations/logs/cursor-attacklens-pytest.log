@@ -1,0 +1,17 @@
+============================= test session starts =============================
+platform win32 -- Python 3.14.5, pytest-8.4.2, pluggy-1.6.0 -- C:\Python314\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\alkur\AppData\Local\Temp\attacklens-eval-worktrees-0e4dedd3c368\cursor-attacklens
+plugins: langsmith-0.8.5, anyio-4.12.1
+collecting ... collected 7 items
+
+tests/test_core.py::test_output_schema_keys PASSED                       [ 14%]
+tests/test_core.py::test_empty_input PASSED                              [ 28%]
+tests/test_core.py::test_basic_ssh_mapping PASSED                        [ 42%]
+tests/test_core.py::test_no_clear_mapping PASSED                         [ 57%]
+tests/test_core.py::test_prompt_injection_refusal PASSED                 [ 71%]
+tests/test_core.py::test_network_investigation_dns PASSED                [ 85%]
+tests/test_core.py::test_app_module_importable PASSED                    [100%]
+
+============================= 7 passed in 11.25s ==============================
+
