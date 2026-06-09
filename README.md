@@ -1,45 +1,78 @@
-# AgentForge: ATT&CKLens Benchmark
+# ATT&CKLens
 
-This repository contains everything you need to run a controlled build experiment comparing multiple AI coding agents on the same defensive cybersecurity application.  The target project, **ATT&CKLens**, is a simple Python/Gradio application that accepts sample security observations and maps them to MITRE ATT&CK tactics and techniques.  Each agent receives the same specification, safety rules and budget, and the results are recorded for later comparison.
+ATT&CKLens is a small defensive Python/Gradio application for mapping synthetic security observations to MITRE ATT&CK-style tactics, techniques, evidence, detection ideas, remediation, and analyst follow-up questions.
 
-## Overview
+The project is designed for the AgentForge benchmark. This Codex branch contains a deterministic local MVP with no paid APIs, no GPU requirement, and no live data fetching.
 
-The primary goal of this repository is to allow you to evaluate how different AI coding agents (Codex, Cursor, Claude Code, Hermes + Nemotron 3 Ultra, Mistral Vibe, Lovable, etc.) interpret and implement the same requirements.  By keeping the specification, tests and safety constraints identical across all runs, you can focus on differences in planning, code quality, documentation and overall safety.
+## Features
 
-The project is organised as follows:
+- Accepts one plain-text security observation at a time.
+- Returns the JSON-serializable schema required by `SPEC.md`.
+- Quotes supporting evidence from the input.
+- Declines to map vague or insufficient evidence.
+- Refuses prompt-injection attempts that ask for hidden prompts or internal instructions.
+- Provides defensive detection, remediation, and network investigation guidance when applicable.
 
-```
-agentforge-attacklens-benchmark/
-├── README.md              # This file
-├── SPEC.md                # Detailed specification of ATT&CKLens
-├── SAFETY_RULES.md        # List of ethical and security constraints
-├── TOKEN_BUDGET.md        # Guidance on prompt/session budgets
-├── ACCEPTANCE_TESTS.md    # Basic acceptance tests for the MVP
-├── EVAL_RUBRIC.md         # Scoring rubric for comparing agents
-├── AGENTS.md              # Instructions for how agents should work
-├── CLAUDE.md              # Additional instructions specific to Claude Code
-├── .cursor/rules          # Cursor-specific rules
-├── sample_inputs/         # Toy logs and inputs for testing
-├── expected_behaviors/    # Example outputs and schemas
-├── agent_runs/            # Directories where agent outputs will live
-├── evaluations/
-│   ├── scorecards/        # Scoring sheets for each agent
-│   └── notes/             # Observations during review
-├── final_report/          # A place to put final write‑ups
-└── bootstrap_scripts/
-    └── setup.sh          # Optional helper script for dependency installation
+## Setup
+
+Create and activate a virtual environment:
+
+```powershell
+python3 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
-There is no working application in this repository—only the scaffolding for the experiment.  Each AI agent will be asked to populate a branch with its own implementation of ATT&CKLens using the files provided here as starting points.
+Install dependencies:
 
-## Instructions
+```powershell
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+```
 
-1. Read through `SPEC.md`, `SAFETY_RULES.md`, and `TOKEN_BUDGET.md` to understand the core requirements, constraints and limits for the project.
-2. Copy the contents of `SPEC.md` and `SAFETY_RULES.md` into your agent prompts when starting an AI session.  Remind the agent not to look at anything outside these documents until instructed.
-3. Ask the agent to write its code in a branch named after the agent.  For example, use `agent/codex-attacklens` for the Codex run.  This repository is initialised with a `main` branch that contains only the spec and supporting files.
-4. After the agent produces code, run the acceptance tests in `ACCEPTANCE_TESTS.md` manually or via a test harness of your choice to verify basic functionality.  Record results in `evaluations/scorecards` and `evaluations/notes`.
-5. Compare the agents using the rubric in `EVAL_RUBRIC.md` and summarise your findings in `final_report/`.
+## Run the App
 
-## Disclaimer
+```powershell
+python app.py
+```
 
-All projects built from this repository must adhere to the ethical constraints defined in `SAFETY_RULES.md`.  Do not use these materials to create unauthorised hacking tools or to violate security policies.  The purpose of ATT&CKLens is educational and defensive only.
+Gradio will print a local URL. Open it in a browser and paste one of the examples from `sample_inputs/`.
+
+## Run Tests
+
+```powershell
+pytest
+```
+
+The tests cover the benchmark sample inputs, schema shape, no-clear-mapping behavior, empty input handling, and prompt-injection refusal.
+
+## Project Structure
+
+```text
+app.py
+requirements.txt
+src/
+  __init__.py
+  core.py
+tests/
+  test_core.py
+prompts/
+  system_prompt.txt
+examples/
+  sample_inputs.txt
+docs/
+  architecture.md
+SECURITY.md
+STATE.md
+```
+
+## Supported MVP Scenarios
+
+- Failed SSH login bursts: `Credential Access`, `T1110 (Brute Force)`.
+- Suspicious encoded PowerShell: `Execution`, `T1059.001 (PowerShell)`.
+- Repeated suspicious DNS requests: `Command and Control`, `T1071.004 (Application Layer Protocol: DNS)`.
+- Nmap-style port scan summaries: `Discovery`, `T1046 (Network Service Discovery)`.
+- Ambiguous observations: no mapping with low confidence and follow-up questions.
+
+## Safety and Limitations
+
+Use only synthetic, anonymised, or authorised lab data. ATT&CKLens does not replace professional analysis and does not include a complete ATT&CK knowledge base. It avoids offensive guidance and returns no mapping when evidence is too weak.
