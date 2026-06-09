@@ -161,7 +161,7 @@ def main():
         Use only in authorized environments with synthetic or anonymized data.
         """)
     
-    demo.launch(theme=gr.themes.Soft())
+    demo.launch()
 
 
 if __name__ == "__main__":
