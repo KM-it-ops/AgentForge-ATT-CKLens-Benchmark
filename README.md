@@ -43,3 +43,13 @@ There is no working application in this repository—only the scaffolding for th
 ## Disclaimer
 
 All projects built from this repository must adhere to the ethical constraints defined in `SAFETY_RULES.md`.  Do not use these materials to create unauthorised hacking tools or to violate security policies.  The purpose of ATT&CKLens is educational and defensive only.
+
+## Benchmark Results
+
+Final results are available in:
+
+evaluations/final/final-report.md
+
+Scorecards are available in:
+
+evaluations/scorecards/
