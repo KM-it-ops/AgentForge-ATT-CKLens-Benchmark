@@ -1,6 +1,6 @@
 # STATE — ATT&CKLens (Claude Code attempt)
 
-_Last updated: 2026-06-08 · Packet 2 (Implementation) — MVP complete_
+_Last updated: 2026-06-08 · Packet 3 (Self-Review) — scored 92/100_
 
 ## Current branch
 `agent/claude-code-attacklens`
@@ -70,7 +70,17 @@ Confidence rule: ≥2 distinct indicators → high, 1 → medium, 0 → low (no-
    benchmark README remains on `main`. ✅
 5. Python 3.9+ compatible (uses `from __future__ import annotations`; local env 3.14). ✅
 
+## Self-review (Packet 3 — EVAL_RUBRIC.md)
+Scored **92/100** in `evaluations/scorecards/claude-code-scorecard.md`.
+- Functional 18/20 · MITRE 13/15 · Safety 14/15 · Code quality 14/15 ·
+  Testing 9/10 · Deployment 9/10 · Docs 10/10 · Efficiency 5/5.
+- Top deductions: narrow 6-technique table (low recall); single-indicator →
+  medium confidence (false-positive risk); regex guardrails bypassable by novel
+  phrasing; UI layer + launch test not in pytest; loose `gradio>=4.0` pin.
+- Prioritised fixes recorded in the scorecard (weight indicators, add UI/launch
+  smoke test, pin deps, ranked candidates, expand signature/guard lists).
+
 ## Next step
-Packet 3+ (optional): self-review against EVAL_RUBRIC.md; expand signature/guard lists
-if evaluation surfaces gaps; consider score-ranked multi-candidate output. Otherwise the
-MVP is feature-complete and ready to run via `python app.py`.
+Optional Packet 4 (hardening): apply scorecard fixes #1–#3 (indicator weighting,
+UI/launch smoke test, dependency pin). Otherwise the MVP is feature-complete and
+runs via `python app.py`.
