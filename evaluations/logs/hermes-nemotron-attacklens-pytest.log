@@ -1,7 +1,7 @@
 ============================= test session starts =============================
 platform win32 -- Python 3.14.5, pytest-8.4.2, pluggy-1.6.0 -- C:\Python314\python.exe
 cachedir: .pytest_cache
-rootdir: C:\Users\alkur\AppData\Local\Temp\attacklens-eval-worktrees-0e4dedd3c368\hermes-nemotron-attacklens
+rootdir: C:\Users\<USER>\AppData\Local\Temp\attacklens-eval-worktrees-0e4dedd3c368\hermes-nemotron-attacklens
 plugins: langsmith-0.8.5, anyio-4.12.1
 collecting ... collected 5 items
 

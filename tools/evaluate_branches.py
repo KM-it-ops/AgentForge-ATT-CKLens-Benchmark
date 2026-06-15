@@ -256,7 +256,16 @@ def add_worktree(repo: Path, artifact: Artifact, worktree_root: Path) -> tuple[P
         proc = run(["git", "worktree", "remove", "--force", str(worktree)], repo, timeout=120)
         if proc.returncode != 0 and worktree.exists():
             return None, f"Could not remove prior evaluator worktree {worktree}:\n{proc.stdout}"
-    proc = run(["git", "worktree", "add", "--detach", str(worktree), artifact.ref], repo, timeout=180)
+    # On a fresh clone only `main` is local; the agent/* branches exist solely as
+    # origin/* remote-tracking refs. Prefer the bare ref (covers commit SHAs like the
+    # recovered Lovable Original), and fall back to origin/<ref> when it isn't local
+    # so the harness reproduces from a plain `git clone` without manual branch setup.
+    ref = artifact.ref
+    if run(["git", "rev-parse", "--verify", "--quiet", f"{ref}^{{commit}}"], repo, timeout=30).returncode != 0:
+        origin_ref = f"origin/{ref}"
+        if run(["git", "rev-parse", "--verify", "--quiet", f"{origin_ref}^{{commit}}"], repo, timeout=30).returncode == 0:
+            ref = origin_ref
+    proc = run(["git", "worktree", "add", "--detach", str(worktree), ref], repo, timeout=180)
     if proc.returncode != 0:
         return None, proc.stdout
     return worktree, ""

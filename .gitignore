@@ -1,0 +1,18 @@
+# graphify tool output — never publish (held internal codename/paths historically)
+graphify-out/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.eval-venv/
+
+# transient evaluator worktrees (the committed evaluations/logs are evidence; keep those)
+attacklens-eval-worktrees-*/
+
+# secrets / local
+.env
+.env.*
+!.env.example
